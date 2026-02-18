@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Linkedin, Send, Terminal } from "lucide-react";
+import { Mail, Linkedin, Send, Terminal, Phone, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import AnimatedSection from "./animated-section";
 import SectionHeading from "./section-heading";
@@ -114,7 +114,41 @@ export default function ContactSection() {
                 <div>
                   <p className="text-sm font-semibold text-foreground">LinkedIn</p>
                   <p className="text-xs text-muted-foreground">
-                    Let's connect professionally
+                    {"Let's connect professionally"}
+                  </p>
+                </div>
+                <Send className="ml-auto h-4 w-4 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
+              </a>
+
+              <a
+                href="tel:+918595873224"
+                className="glass group flex items-center gap-4 rounded-xl p-5 transition-all hover:shadow-[0_0_30px_rgba(0,82,204,0.12)]"
+              >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[rgba(0,82,204,0.1)] transition-colors group-hover:bg-[rgba(0,82,204,0.2)]">
+                  <Phone className="h-6 w-6 text-[#0052cc]" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Call</p>
+                  <p className="text-xs text-muted-foreground">
+                    +91 8595873224
+                  </p>
+                </div>
+                <Send className="ml-auto h-4 w-4 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
+              </a>
+
+              <a
+                href="https://wa.me/918595873224"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass group flex items-center gap-4 rounded-xl p-5 transition-all hover:shadow-[0_0_30px_rgba(0,82,204,0.12)]"
+              >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[rgba(37,211,102,0.1)] transition-colors group-hover:bg-[rgba(37,211,102,0.2)]">
+                  <MessageCircle className="h-6 w-6 text-[#25d366]" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">WhatsApp</p>
+                  <p className="text-xs text-muted-foreground">
+                    Chat on WhatsApp
                   </p>
                 </div>
                 <Send className="ml-auto h-4 w-4 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
