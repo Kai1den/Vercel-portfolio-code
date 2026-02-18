@@ -107,17 +107,27 @@ function hexToRgb(hex: string): string {
     : "255, 255, 255";
 }
 
-/* ─── Floating ambient particles (CSS only) ─── */
+/* ─── Floating ambient particles (client-only to avoid hydration mismatch) ─── */
 function AmbientParticles() {
-  const particles = Array.from({ length: 30 }, (_, i) => ({
-    id: i,
-    left: `${Math.random() * 100}%`,
-    top: `${Math.random() * 100}%`,
-    size: Math.random() * 3 + 1,
-    duration: Math.random() * 8 + 6,
-    delay: Math.random() * 5,
-    opacity: Math.random() * 0.3 + 0.1,
-  }));
+  const [particles, setParticles] = useState<
+    { id: number; left: string; top: string; size: number; duration: number; delay: number; opacity: number }[]
+  >([]);
+
+  useEffect(() => {
+    setParticles(
+      Array.from({ length: 30 }, (_, i) => ({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        size: Math.random() * 3 + 1,
+        duration: Math.random() * 8 + 6,
+        delay: Math.random() * 5,
+        opacity: Math.random() * 0.3 + 0.1,
+      }))
+    );
+  }, []);
+
+  if (particles.length === 0) return null;
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
