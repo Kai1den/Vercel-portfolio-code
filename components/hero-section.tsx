@@ -1,18 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import dynamic from "next/dynamic";
 import { ArrowDown } from "lucide-react";
-
-const HeroCharacter3D = dynamic(() => import("./hero-character-3d"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-full w-full items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0052cc] border-t-transparent" />
-    </div>
-  ),
-});
 
 /* ─── Rotating taglines ─── */
 const taglines = [
@@ -23,7 +13,7 @@ const taglines = [
   "Powering Growth with Insights",
 ];
 
-/* ─── Tool icon definitions with SVG paths ─── */
+/* ─── Tool definitions ─── */
 const tools = [
   {
     name: "Zoho",
@@ -109,14 +99,142 @@ const tools = [
   },
 ];
 
-/* ─── Animated tagline rotator ─── */
+/* ─── Utility ─── */
+function hexToRgb(hex: string): string {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
+    : "255, 255, 255";
+}
+
+/* ─── Floating ambient particles (CSS only) ─── */
+function AmbientParticles() {
+  const particles = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    size: Math.random() * 3 + 1,
+    duration: Math.random() * 8 + 6,
+    delay: Math.random() * 5,
+    opacity: Math.random() * 0.3 + 0.1,
+  }));
+
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            left: p.left,
+            top: p.top,
+            width: p.size,
+            height: p.size,
+            background: `rgba(0, 82, 204, ${p.opacity})`,
+          }}
+          animate={{
+            y: [0, -40, 0],
+            opacity: [p.opacity, p.opacity * 2, p.opacity],
+          }}
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ─── Letter-by-letter animated name ─── */
+function AnimatedName() {
+  const name = "GAUTAM";
+
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.5,
+      },
+    },
+  };
+
+  const letterVariants = {
+    hidden: {
+      opacity: 0,
+      y: 60,
+      rotateX: -90,
+      filter: "blur(12px)",
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      filter: "blur(0px)",
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 12,
+        mass: 0.8,
+      },
+    },
+  };
+
+  return (
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="flex items-center justify-center perspective-[800px]"
+      aria-label="Gautam"
+    >
+      {name.split("").map((char, i) => (
+        <motion.span
+          key={i}
+          variants={letterVariants}
+          className="hero-letter relative inline-block text-6xl font-bold tracking-tight text-foreground sm:text-7xl md:text-8xl lg:text-9xl"
+          style={{
+            textShadow: "0 0 40px rgba(0, 82, 204, 0.0)",
+          }}
+          whileHover={{
+            scale: 1.1,
+            color: "#3385ff",
+            textShadow: "0 0 30px rgba(0, 82, 204, 0.5), 0 0 60px rgba(0, 82, 204, 0.2)",
+            transition: { duration: 0.2 },
+          }}
+        >
+          {char}
+        </motion.span>
+      ))}
+    </motion.div>
+  );
+}
+
+/* ─── Glow line under the name ─── */
+function GlowUnderline() {
+  return (
+    <motion.div
+      className="mx-auto mt-3 h-px w-0 md:mt-4"
+      style={{
+        background: "linear-gradient(90deg, transparent, #0052cc, #3385ff, #0052cc, transparent)",
+      }}
+      animate={{ width: "100%" }}
+      transition={{ duration: 1.2, delay: 1.4, ease: "easeOut" }}
+    />
+  );
+}
+
+/* ─── Rotating tagline ─── */
 function RotatingTagline() {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % taglines.length);
-    }, 3000);
+    }, 3200);
     return () => clearInterval(interval);
   }, []);
 
@@ -125,10 +243,10 @@ function RotatingTagline() {
       <AnimatePresence mode="wait">
         <motion.p
           key={index}
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -30, opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+          initial={{ y: 24, opacity: 0, filter: "blur(4px)" }}
+          animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+          exit={{ y: -24, opacity: 0, filter: "blur(4px)" }}
+          transition={{ duration: 0.45, ease: "easeInOut" }}
           className="absolute inset-0 text-center font-mono text-sm tracking-widest text-[#3385ff] md:text-base"
         >
           {taglines[index]}
@@ -138,149 +256,146 @@ function RotatingTagline() {
   );
 }
 
-/* ─── Tool icon with hover interactions ─── */
-function ToolIcon({
-  tool,
-  delay,
-}: {
-  tool: (typeof tools)[number];
-  delay: number;
-}) {
+/* ─── Tool icon with hover glow ─── */
+function ToolIcon({ tool, delay }: { tool: (typeof tools)[number]; delay: number }) {
+  const rgb = hexToRgb(tool.color);
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ duration: 0.5, delay, type: "spring", stiffness: 200 }}
-      whileHover={{ scale: 1.15, y: -4 }}
-      className="group relative flex flex-col items-center gap-1.5"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay, type: "spring", stiffness: 180, damping: 14 }}
+      whileHover={{ y: -6 }}
+      className="group relative flex flex-col items-center gap-2"
     >
+      {/* Hover glow ring */}
       <div
-        className="flex h-10 w-10 items-center justify-center rounded-xl border border-[rgba(255,255,255,0.08)] transition-all duration-300 md:h-12 md:w-12"
+        className="absolute -inset-2 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
-          background: `rgba(${hexToRgb(tool.color)}, 0.08)`,
+          background: `radial-gradient(circle, rgba(${rgb}, 0.12) 0%, transparent 70%)`,
+        }}
+      />
+      <div
+        className="relative flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-300 md:h-13 md:w-13"
+        style={{
+          borderColor: `rgba(${rgb}, 0.15)`,
+          background: `rgba(${rgb}, 0.06)`,
           color: tool.color,
-          boxShadow: `0 0 0px rgba(${hexToRgb(tool.color)}, 0)`,
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = `0 0 20px rgba(${hexToRgb(tool.color)}, 0.3)`;
-          e.currentTarget.style.borderColor = `rgba(${hexToRgb(tool.color)}, 0.4)`;
-          e.currentTarget.style.background = `rgba(${hexToRgb(tool.color)}, 0.15)`;
+          e.currentTarget.style.boxShadow = `0 0 24px rgba(${rgb}, 0.3), inset 0 0 12px rgba(${rgb}, 0.08)`;
+          e.currentTarget.style.borderColor = `rgba(${rgb}, 0.5)`;
+          e.currentTarget.style.background = `rgba(${rgb}, 0.14)`;
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = `0 0 0px rgba(${hexToRgb(tool.color)}, 0)`;
-          e.currentTarget.style.borderColor = `rgba(255, 255, 255, 0.08)`;
-          e.currentTarget.style.background = `rgba(${hexToRgb(tool.color)}, 0.08)`;
+          e.currentTarget.style.boxShadow = "none";
+          e.currentTarget.style.borderColor = `rgba(${rgb}, 0.15)`;
+          e.currentTarget.style.background = `rgba(${rgb}, 0.06)`;
         }}
       >
         {tool.icon}
       </div>
-      <span className="font-mono text-[10px] tracking-wider text-muted-foreground transition-colors group-hover:text-foreground md:text-xs">
+      <span className="font-mono text-[10px] tracking-wider text-muted-foreground transition-colors duration-200 group-hover:text-foreground md:text-xs">
         {tool.name}
       </span>
     </motion.div>
   );
 }
 
-/* ─── Utility ─── */
-function hexToRgb(hex: string): string {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
-    : "255, 255, 255";
-}
-
-/* ─── Typing animation for the name ─── */
-function TypedName() {
-  const name = "Gautam";
+/* ─── Subtle grid background ─── */
+function GridBackground() {
   return (
-    <span className="inline-flex">
-      {name.split("").map((char, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.4,
-            delay: 0.6 + i * 0.08,
-            ease: "easeOut",
-          }}
-          className="inline-block"
-        >
-          {char}
-        </motion.span>
-      ))}
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 1, 0] }}
-        transition={{ duration: 0.8, delay: 1.2, repeat: Infinity, repeatDelay: 0.5 }}
-        className="ml-1 inline-block w-[3px] bg-[#3385ff]"
-        style={{ height: "1em" }}
-      />
-    </span>
+    <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-[0.03]">
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="hero-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="white" strokeWidth="0.5" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#hero-grid)" />
+      </svg>
+    </div>
   );
 }
 
-/* ─── Main Hero ─── */
+/* ─── Mouse-following spotlight ─── */
+function Spotlight() {
+  const [pos, setPos] = useState({ x: 50, y: 50 });
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    setPos({
+      x: (e.clientX / window.innerWidth) * 100,
+      y: (e.clientY / window.innerHeight) * 100,
+    });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [handleMouseMove]);
+
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 z-0 transition-[background] duration-500 ease-out"
+      style={{
+        background: `radial-gradient(circle 500px at ${pos.x}% ${pos.y}%, rgba(0,82,204,0.06) 0%, transparent 80%)`,
+      }}
+    />
+  );
+}
+
+/* ━━━━━━━━━━━━ Main Hero ━━━━━━━━━━━━ */
 export default function HeroSection() {
   return (
     <section
       id="home"
-      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden"
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6"
     >
-      {/* Background ambient gradient */}
+      {/* Background layers */}
+      <GridBackground />
+      <AmbientParticles />
+      <Spotlight />
+
+      {/* Static ambient gradient */}
       <div
-        className="pointer-events-none absolute inset-0 z-0"
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at 50% 30%, rgba(0,82,204,0.12) 0%, transparent 60%), radial-gradient(circle at 80% 70%, rgba(51,133,255,0.06) 0%, transparent 40%)",
+            "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(0,82,204,0.08) 0%, transparent 100%)",
         }}
       />
 
-      {/* 3D Character */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        className="relative z-[1] h-[320px] w-full max-w-lg md:h-[420px] lg:h-[480px]"
-      >
-        <HeroCharacter3D />
-
-        {/* Glow ring under the figure */}
-        <div
-          className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2"
-          style={{
-            width: "280px",
-            height: "40px",
-            borderRadius: "50%",
-            background: "radial-gradient(ellipse, rgba(0,82,204,0.25) 0%, transparent 70%)",
-            filter: "blur(8px)",
-          }}
-        />
-      </motion.div>
-
-      {/* Text content */}
-      <div className="relative z-10 mt-2 flex flex-col items-center px-6 text-center md:mt-4">
+      {/* Content */}
+      <div className="relative z-10 flex max-w-3xl flex-col items-center text-center">
+        {/* Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <span className="mb-3 inline-block rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] px-4 py-1.5 font-mono text-[10px] tracking-[0.2em] text-[#3385ff] uppercase backdrop-blur-sm md:text-xs">
+          <span className="mb-8 inline-flex items-center gap-2 rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.03)] px-4 py-1.5 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase backdrop-blur-sm md:text-xs">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#0052cc] shadow-[0_0_8px_rgba(0,82,204,0.6)]" />
             Data Analyst &mdash; Operations & MIS
           </span>
         </motion.div>
 
-        <h1 className="mb-3 text-5xl font-bold tracking-tight text-foreground md:text-7xl lg:text-8xl">
-          <TypedName />
-        </h1>
+        {/* Animated name */}
+        <div className="mb-2 mt-6">
+          <AnimatedName />
+          <GlowUnderline />
+        </div>
 
-        <RotatingTagline />
+        {/* Rotating taglines */}
+        <div className="mt-5">
+          <RotatingTagline />
+        </div>
 
+        {/* Description */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.0 }}
-          className="mt-3 max-w-lg text-pretty text-sm text-muted-foreground md:text-base"
+          transition={{ duration: 0.6, delay: 1.6 }}
+          className="mt-4 max-w-lg text-pretty text-sm leading-relaxed text-muted-foreground md:text-base"
         >
           Crafting data-driven solutions through workflow automation, business
           intelligence, and operational excellence.
@@ -288,39 +403,39 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.2 }}
+          transition={{ duration: 0.6, delay: 1.8 }}
           className="mt-8 flex gap-4"
         >
           <a
             href="#experience"
-            className="group flex items-center gap-2 rounded-lg bg-[#0052cc] px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#3385ff] hover:shadow-[0_0_24px_rgba(0,82,204,0.4)]"
+            className="group flex items-center gap-2 rounded-lg bg-[#0052cc] px-6 py-3 text-sm font-medium text-white transition-all duration-300 hover:bg-[#3385ff] hover:shadow-[0_0_28px_rgba(0,82,204,0.45)]"
           >
             View My Work
-            <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+            <ArrowDown className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
           </a>
           <a
             href="#contact"
-            className="rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] px-6 py-3 text-sm font-medium text-foreground backdrop-blur-sm transition-all hover:border-[rgba(255,255,255,0.2)] hover:bg-[rgba(255,255,255,0.06)]"
+            className="rounded-lg border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] px-6 py-3 text-sm font-medium text-foreground backdrop-blur-sm transition-all duration-300 hover:border-[rgba(255,255,255,0.2)] hover:bg-[rgba(255,255,255,0.06)]"
           >
             Get in Touch
           </a>
         </motion.div>
 
-        {/* Tool icons row */}
-        <div className="mt-10 flex flex-col items-center gap-3 md:mt-12">
+        {/* Tool icons */}
+        <div className="mt-14 flex flex-col items-center gap-4">
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
+            transition={{ delay: 2.0 }}
             className="font-mono text-[10px] tracking-[0.3em] text-muted-foreground uppercase"
           >
             Powered by
           </motion.span>
-          <div className="flex items-end gap-4 md:gap-6">
+          <div className="flex flex-wrap items-end justify-center gap-5 md:gap-7">
             {tools.map((tool, i) => (
-              <ToolIcon key={tool.name} tool={tool} delay={1.6 + i * 0.1} />
+              <ToolIcon key={tool.name} tool={tool} delay={2.1 + i * 0.1} />
             ))}
           </div>
         </div>
@@ -330,13 +445,13 @@ export default function HeroSection() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2.5, duration: 1 }}
-        className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2"
+        transition={{ delay: 3, duration: 1 }}
+        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
       >
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          className="flex h-10 w-6 items-start justify-center rounded-full border border-[rgba(255,255,255,0.15)] pt-2"
+          className="flex h-10 w-6 items-start justify-center rounded-full border border-[rgba(255,255,255,0.12)] pt-2"
         >
           <div className="h-2 w-1 rounded-full bg-[#3385ff]" />
         </motion.div>
