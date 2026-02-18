@@ -87,74 +87,74 @@ export default function ContactSection() {
           <AnimatedSection delay={0.2}>
             <div className="flex flex-col gap-4">
               <a
-                href="mailto:gautam@example.com"
-                className="glass group flex items-center gap-4 rounded-xl p-5 transition-all hover:shadow-[0_0_30px_rgba(0,82,204,0.12)]"
+                href="mailto:Gautambairwa6891@gmail.com"
+                className="glass group flex items-center gap-3 rounded-xl p-4 transition-all hover:shadow-[0_0_30px_rgba(0,82,204,0.12)] sm:gap-4 sm:p-5"
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[rgba(0,82,204,0.1)] transition-colors group-hover:bg-[rgba(0,82,204,0.2)]">
-                  <Mail className="h-6 w-6 text-[#0052cc]" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[rgba(0,82,204,0.1)] transition-colors group-hover:bg-[rgba(0,82,204,0.2)] sm:h-12 sm:w-12">
+                  <Mail className="h-5 w-5 text-[#0052cc] sm:h-6 sm:w-6" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-semibold text-foreground">Email</p>
-                  <p className="text-xs text-muted-foreground">
-                    Drop me a message
+                  <p className="truncate text-xs text-muted-foreground">
+                    Gautambairwa6891@gmail.com
                   </p>
                 </div>
-                <Send className="ml-auto h-4 w-4 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
+                <Send className="ml-auto h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
               </a>
 
               <a
-                href="https://linkedin.com/in/gautam"
+                href="https://www.linkedin.com/in/gautambairwa"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass group flex items-center gap-4 rounded-xl p-5 transition-all hover:shadow-[0_0_30px_rgba(0,82,204,0.12)]"
+                className="glass group flex items-center gap-3 rounded-xl p-4 transition-all hover:shadow-[0_0_30px_rgba(0,82,204,0.12)] sm:gap-4 sm:p-5"
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[rgba(0,82,204,0.1)] transition-colors group-hover:bg-[rgba(0,82,204,0.2)]">
-                  <Linkedin className="h-6 w-6 text-[#0052cc]" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[rgba(0,82,204,0.1)] transition-colors group-hover:bg-[rgba(0,82,204,0.2)] sm:h-12 sm:w-12">
+                  <Linkedin className="h-5 w-5 text-[#0052cc] sm:h-6 sm:w-6" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-semibold text-foreground">LinkedIn</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="truncate text-xs text-muted-foreground">
                     {"Let's connect professionally"}
                   </p>
                 </div>
-                <Send className="ml-auto h-4 w-4 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
+                <Send className="ml-auto h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
               </a>
 
               <a
                 href="tel:+918595873224"
-                className="glass group flex items-center gap-4 rounded-xl p-5 transition-all hover:shadow-[0_0_30px_rgba(0,82,204,0.12)]"
+                className="glass group flex items-center gap-3 rounded-xl p-4 transition-all hover:shadow-[0_0_30px_rgba(0,82,204,0.12)] sm:gap-4 sm:p-5"
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[rgba(0,82,204,0.1)] transition-colors group-hover:bg-[rgba(0,82,204,0.2)]">
-                  <Phone className="h-6 w-6 text-[#0052cc]" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[rgba(0,82,204,0.1)] transition-colors group-hover:bg-[rgba(0,82,204,0.2)] sm:h-12 sm:w-12">
+                  <Phone className="h-5 w-5 text-[#0052cc] sm:h-6 sm:w-6" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-semibold text-foreground">Call</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="truncate text-xs text-muted-foreground">
                     +91 8595873224
                   </p>
                 </div>
-                <Send className="ml-auto h-4 w-4 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
+                <Send className="ml-auto h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
               </a>
 
               <a
                 href="https://wa.me/918595873224"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass group flex items-center gap-4 rounded-xl p-5 transition-all hover:shadow-[0_0_30px_rgba(0,82,204,0.12)]"
+                className="glass group flex items-center gap-3 rounded-xl p-4 transition-all hover:shadow-[0_0_30px_rgba(0,82,204,0.12)] sm:gap-4 sm:p-5"
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[rgba(37,211,102,0.1)] transition-colors group-hover:bg-[rgba(37,211,102,0.2)]">
-                  <MessageCircle className="h-6 w-6 text-[#25d366]" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[rgba(37,211,102,0.1)] transition-colors group-hover:bg-[rgba(37,211,102,0.2)] sm:h-12 sm:w-12">
+                  <MessageCircle className="h-5 w-5 text-[#25d366] sm:h-6 sm:w-6" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-semibold text-foreground">WhatsApp</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="truncate text-xs text-muted-foreground">
                     Chat on WhatsApp
                   </p>
                 </div>
-                <Send className="ml-auto h-4 w-4 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
+                <Send className="ml-auto h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
               </a>
 
-              <div className="glass rounded-xl p-5">
+              <div className="glass rounded-xl p-4 sm:p-5">
                 <p className="mb-2 text-sm font-semibold text-foreground">
                   Current Status
                 </p>
