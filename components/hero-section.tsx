@@ -205,14 +205,9 @@ function AnimatedName() {
         <motion.span
           key={i}
           variants={letterVariants}
-          className="hero-letter relative inline-block text-6xl font-bold tracking-tight text-foreground sm:text-7xl md:text-8xl lg:text-9xl"
-          style={{
-            textShadow: "0 0 40px rgba(0, 82, 204, 0.0)",
-          }}
+          className="hero-letter relative inline-block cursor-default text-6xl font-bold tracking-tight text-[#f0f0f0] transition-colors duration-200 hover:text-[#3385ff] sm:text-7xl md:text-8xl lg:text-9xl hover:[text-shadow:0_0_30px_rgba(0,82,204,0.5),0_0_60px_rgba(0,82,204,0.2)]"
           whileHover={{
             scale: 1.1,
-            color: "#3385ff",
-            textShadow: "0 0 30px rgba(0, 82, 204, 0.5), 0 0 60px rgba(0, 82, 204, 0.2)",
             transition: { duration: 0.2 },
           }}
         >
