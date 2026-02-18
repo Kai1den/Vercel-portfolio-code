@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+/* Tools orbit – pure CSS/Framer Motion, no 3D deps */
 
 const tools = [
   {
