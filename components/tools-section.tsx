@@ -1,10 +1,8 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import AnimatedSection from "./animated-section";
 import SectionHeading from "./section-heading";
-
-const ToolOrbit3D = dynamic(() => import("./tool-orbit-3d"), { ssr: false });
+import ToolOrbit3D from "./tool-orbit-3d";
 
 export default function ToolsSection() {
   return (

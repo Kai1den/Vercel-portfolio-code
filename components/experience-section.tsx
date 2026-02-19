@@ -8,7 +8,7 @@ const experiences = [
   {
     company: "Greenscape-eco",
     role: "MIS Executive / Data Analyst",
-    period: "2024 - Present",
+    period: "March 2025 - Present",
     highlight: "Led migration from Tally to Zoho Books",
     achievements: [
       "Led the complete migration from Tally to Zoho Books, establishing a modern cloud-based accounting ecosystem",
@@ -20,7 +20,7 @@ const experiences = [
   {
     company: "ROI Hunt",
     role: "Operations & Data Analyst",
-    period: "2023 - 2024",
+    period: "November 2024 - March 2025",
     highlight: "Performance marketing analytics",
     achievements: [
       "Managed cross-platform ad performance analytics for clients across Google, Meta, and Amazon",

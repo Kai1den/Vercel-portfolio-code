@@ -1,181 +1,203 @@
 "use client";
 
-import { useRef, useState, useMemo } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Text, Float } from "@react-three/drei";
-import * as THREE from "three";
-
-interface ToolSphereProps {
-  name: string;
-  color: string;
-  position: [number, number, number];
-  orbitRadius: number;
-  orbitSpeed: number;
-  orbitOffset: number;
-}
-
-function ToolSphere({
-  name,
-  color,
-  orbitRadius,
-  orbitSpeed,
-  orbitOffset,
-}: ToolSphereProps) {
-  const groupRef = useRef<THREE.Group>(null);
-  const meshRef = useRef<THREE.Mesh>(null);
-  const [hovered, setHovered] = useState(false);
-
-  useFrame(({ clock }) => {
-    if (!groupRef.current) return;
-    const t = clock.getElapsedTime() * orbitSpeed + orbitOffset;
-    groupRef.current.position.x = Math.cos(t) * orbitRadius;
-    groupRef.current.position.z = Math.sin(t) * orbitRadius;
-    groupRef.current.position.y = Math.sin(t * 0.5) * 0.5;
-  });
-
-  const scale = hovered ? 1.3 : 1;
-
-  return (
-    <group ref={groupRef}>
-      <Float speed={2} rotationIntensity={0.3} floatIntensity={0.3}>
-        <mesh
-          ref={meshRef}
-          onPointerOver={() => setHovered(true)}
-          onPointerOut={() => setHovered(false)}
-          scale={scale}
-        >
-          <sphereGeometry args={[0.4, 32, 32]} />
-          <meshStandardMaterial
-            color={color}
-            emissive={color}
-            emissiveIntensity={hovered ? 0.8 : 0.3}
-            roughness={0.2}
-            metalness={0.8}
-          />
-        </mesh>
-
-        {/* Ring around sphere */}
-        <mesh rotation={[Math.PI / 2, 0, 0]} scale={scale}>
-          <ringGeometry args={[0.55, 0.6, 32]} />
-          <meshBasicMaterial
-            color={color}
-            transparent
-            opacity={hovered ? 0.6 : 0.15}
-            side={THREE.DoubleSide}
-          />
-        </mesh>
-
-        {/* Label */}
-        <Text
-          position={[0, -0.7, 0]}
-          fontSize={0.18}
-          color={hovered ? "#ffffff" : "#888888"}
-          anchorX="center"
-          anchorY="top"
-          font="/fonts/Geist-Bold.ttf"
-        >
-          {name}
-        </Text>
-
-        {/* Glow when hovered */}
-        {hovered && (
-          <pointLight
-            position={[0, 0, 0]}
-            intensity={2}
-            distance={3}
-            color={color}
-          />
-        )}
-      </Float>
-    </group>
-  );
-}
-
-function CenterCore() {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame(({ clock }) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = clock.getElapsedTime() * 0.2;
-      meshRef.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.3) * 0.1;
-    }
-  });
-
-  return (
-    <group>
-      <mesh ref={meshRef}>
-        <octahedronGeometry args={[0.5, 0]} />
-        <meshStandardMaterial
-          color="#0052cc"
-          emissive="#0052cc"
-          emissiveIntensity={0.5}
-          wireframe
-        />
-      </mesh>
-      <pointLight position={[0, 0, 0]} intensity={1.5} distance={8} color="#0052cc" />
-    </group>
-  );
-}
-
-function OrbitRing({ radius }: { radius: number }) {
-  const points = useMemo(() => {
-    const pts = [];
-    for (let i = 0; i <= 64; i++) {
-      const angle = (i / 64) * Math.PI * 2;
-      pts.push(new THREE.Vector3(Math.cos(angle) * radius, 0, Math.sin(angle) * radius));
-    }
-    return pts;
-  }, [radius]);
-
-  const geometry = useMemo(() => {
-    return new THREE.BufferGeometry().setFromPoints(points);
-  }, [points]);
-
-  return (
-    <line>
-      <bufferGeometry attach="geometry" {...geometry} />
-      <lineBasicMaterial color="#0052cc" transparent opacity={0.08} />
-    </line>
-  );
-}
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+/* Tools orbit – pure CSS/Framer Motion, no 3D deps */
 
 const tools = [
-  { name: "Zoho Suite", color: "#e74c3c", orbitRadius: 2.5, orbitSpeed: 0.3, orbitOffset: 0 },
-  { name: "Power BI", color: "#f7c948", orbitRadius: 2.5, orbitSpeed: 0.3, orbitOffset: Math.PI * 2 / 6 },
-  { name: "Airtable", color: "#18bfff", orbitRadius: 2.5, orbitSpeed: 0.3, orbitOffset: (Math.PI * 2 / 6) * 2 },
-  { name: "Excel", color: "#217346", orbitRadius: 3.5, orbitSpeed: 0.2, orbitOffset: Math.PI / 4 },
-  { name: "SQL", color: "#cc6600", orbitRadius: 3.5, orbitSpeed: 0.2, orbitOffset: Math.PI / 4 + Math.PI * 2 / 3 },
-  { name: "Python", color: "#3776ab", orbitRadius: 3.5, orbitSpeed: 0.2, orbitOffset: Math.PI / 4 + (Math.PI * 2 / 3) * 2 },
+  {
+    name: "Zoho Suite",
+    color: "#D32011",
+    desc: "CRM, Books, Desk, Projects and full business workflow automation",
+  },
+  {
+    name: "Power BI",
+    color: "#F2C811",
+    desc: "Interactive dashboards, DAX measures, and real-time data visualization",
+  },
+  {
+    name: "Airtable",
+    color: "#18BFFF",
+    desc: "Relational databases, project tracking, and collaborative workflows",
+  },
+  {
+    name: "Excel",
+    color: "#217346",
+    desc: "Advanced formulas, pivot tables, VBA macros, and data modeling",
+  },
+  {
+    name: "SQL",
+    color: "#00BCF2",
+    desc: "Complex queries, stored procedures, and database optimization",
+  },
+  {
+    name: "Python",
+    color: "#3776AB",
+    desc: "Data analysis with Pandas, automation scripts, and API integrations",
+  },
 ];
 
-export default function ToolOrbit3D() {
+function hexToRgb(hex: string): string {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
+    : "255, 255, 255";
+}
+
+function ToolNode({
+  tool,
+  index,
+  isActive,
+  onClick,
+}: {
+  tool: (typeof tools)[number];
+  index: number;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const rgb = hexToRgb(tool.color);
+  const angle = (index / tools.length) * Math.PI * 2 - Math.PI / 2;
+  const radius = 140;
+  const x = Math.cos(angle) * radius;
+  const y = Math.sin(angle) * radius;
+
   return (
-    <div className="h-[500px] w-full md:h-[600px]">
-      <Canvas
-        camera={{ position: [0, 4, 8], fov: 45 }}
-        gl={{ antialias: true, alpha: true }}
-        style={{ background: "transparent" }}
+    <motion.button
+      onClick={onClick}
+      className="absolute flex flex-col items-center gap-2"
+      style={{
+        left: `calc(50% + ${x}px)`,
+        top: `calc(50% + ${y}px)`,
+        transform: "translate(-50%, -50%)",
+      }}
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 0.2 + index * 0.1, type: "spring", stiffness: 200, damping: 15 }}
+      whileHover={{ scale: 1.15 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      {/* Glow */}
+      <div
+        className="absolute -inset-3 rounded-full opacity-0 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(circle, rgba(${rgb}, ${isActive ? 0.3 : 0}) 0%, transparent 70%)`,
+          opacity: isActive ? 1 : undefined,
+        }}
+      />
+      {/* Circle */}
+      <div
+        className="relative flex h-14 w-14 items-center justify-center rounded-full border-2 transition-all duration-300 md:h-16 md:w-16"
+        style={{
+          borderColor: isActive ? tool.color : `rgba(${rgb}, 0.3)`,
+          background: isActive ? `rgba(${rgb}, 0.2)` : `rgba(${rgb}, 0.06)`,
+          boxShadow: isActive ? `0 0 24px rgba(${rgb}, 0.4), inset 0 0 12px rgba(${rgb}, 0.1)` : "none",
+        }}
       >
-        <ambientLight intensity={0.3} />
-        <pointLight position={[10, 10, 10]} intensity={0.6} />
-        <pointLight position={[-10, -10, -10]} intensity={0.3} color="#3385ff" />
+        <span
+          className="text-lg font-bold md:text-xl"
+          style={{ color: tool.color }}
+        >
+          {tool.name.charAt(0)}
+        </span>
+      </div>
+      <span
+        className="text-center font-mono text-[10px] tracking-wider transition-colors duration-200 md:text-xs"
+        style={{ color: isActive ? tool.color : "rgba(255,255,255,0.5)" }}
+      >
+        {tool.name}
+      </span>
+    </motion.button>
+  );
+}
 
-        <CenterCore />
-        <OrbitRing radius={2.5} />
-        <OrbitRing radius={3.5} />
+export default function ToolOrbit3D() {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-        {tools.map((tool) => (
-          <ToolSphere
+  return (
+    <div className="flex flex-col items-center gap-10 py-8 md:py-12">
+      {/* Orbit visualization */}
+      <div className="relative h-[360px] w-[360px] md:h-[400px] md:w-[400px]">
+        {/* Orbit ring */}
+        <div className="absolute inset-[calc(50%-140px)] h-[280px] w-[280px] rounded-full border border-[rgba(255,255,255,0.05)]" />
+        <motion.div
+          className="absolute inset-[calc(50%-140px)] h-[280px] w-[280px] rounded-full border border-[rgba(0,82,204,0.15)]"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+        />
+
+        {/* Center core */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <motion.div
+            className="relative flex h-16 w-16 items-center justify-center rounded-full border border-[rgba(0,82,204,0.3)] bg-[rgba(0,82,204,0.08)]"
+            animate={{
+              boxShadow: [
+                "0 0 20px rgba(0,82,204,0.2), inset 0 0 10px rgba(0,82,204,0.1)",
+                "0 0 40px rgba(0,82,204,0.3), inset 0 0 20px rgba(0,82,204,0.15)",
+                "0 0 20px rgba(0,82,204,0.2), inset 0 0 10px rgba(0,82,204,0.1)",
+              ],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <span className="font-mono text-xs font-bold tracking-wider text-[#3385ff]">
+              GB
+            </span>
+          </motion.div>
+          {/* Connecting lines */}
+          {tools.map((_, i) => {
+            const angle = (i / tools.length) * Math.PI * 2 - Math.PI / 2;
+            const length = 140;
+            return (
+              <div
+                key={i}
+                className="absolute left-1/2 top-1/2 origin-left"
+                style={{
+                  width: length,
+                  height: "1px",
+                  background: `linear-gradient(90deg, rgba(0,82,204,0.15), transparent)`,
+                  transform: `rotate(${(angle * 180) / Math.PI}deg)`,
+                }}
+              />
+            );
+          })}
+        </div>
+
+        {/* Tool nodes */}
+        {tools.map((tool, i) => (
+          <ToolNode
             key={tool.name}
-            name={tool.name}
-            color={tool.color}
-            position={[0, 0, 0]}
-            orbitRadius={tool.orbitRadius}
-            orbitSpeed={tool.orbitSpeed}
-            orbitOffset={tool.orbitOffset}
+            tool={tool}
+            index={i}
+            isActive={activeIndex === i}
+            onClick={() => setActiveIndex(activeIndex === i ? null : i)}
           />
         ))}
-      </Canvas>
+      </div>
+
+      {/* Active tool detail */}
+      <div className="h-20 w-full max-w-md px-4">
+        <AnimatePresence mode="wait">
+          {activeIndex !== null && (
+            <motion.div
+              key={activeIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="glass rounded-xl p-4 text-center"
+            >
+              <p
+                className="text-sm font-semibold"
+                style={{ color: tools[activeIndex].color }}
+              >
+                {tools[activeIndex].name}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-[rgba(255,255,255,0.6)]">
+                {tools[activeIndex].desc}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
