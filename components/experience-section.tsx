@@ -8,7 +8,7 @@ const experiences = [
   {
     company: "Greenscape-eco",
     role: "MIS Executive / Data Analyst",
-    period: "2024 - Present",
+    period: "2025 - Present",
     highlight: "Led migration from Tally to Zoho Books",
     achievements: [
       "Led the complete migration from Tally to Zoho Books, establishing a modern cloud-based accounting ecosystem",
